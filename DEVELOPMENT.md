@@ -176,6 +176,45 @@ layer index 0**. Runtime switching is the `Magic` layer number row
 `keymap.json` (3 `&tog`, the 4 Magic `&to` switchers) — all other layer
 references are symbolic `LAYER_<name>`, which survive reordering.
 
+### Recipe: add or reorder a base alpha layout
+
+This is the exact, proven procedure (used in v52 to make Colemak-DH the default).
+The scripted version lives in **`tools/reorder-base-layout.rb`** (a documented
+worked example — copy and adapt its constants for the next change).
+
+1. **Derive the new base layer from an existing *assembled* base layer in
+   `keymap.json`** — e.g. copy the `Colemak` layer and remap only the letter
+   keys. **Do NOT graft from `layouts/*.json`:** those templates fill the
+   F-row / number / arrow positions that the assembled base layers deliberately
+   leave as `&none`, so ~30–47 positions differ and a direct copy is wrong.
+2. **Apply the letter changes** on the copied layer, and **rename
+   `LAYER_<old>` → `LAYER_<new>`** throughout *that layer's* bindings. Keeping
+   the layer name, its home-row `LAYER_<name>` args, and (after `rake`) its
+   `== 0` guard all in agreement is what avoids the `dtc` footgun below.
+   *(Colemak → Colemak Mod-DH is six swaps: pos 27 `G→B`, 39 `D→G`, 40 `H→M`,
+   50 `V→D`, 51 `B→V`, 59 `M→H`.)*
+3. **Reorder `layer_names` and `layers` together.** Layers before `Typing` are
+   the enabled alpha layouts; **index 0 is the boot default**.
+4. **Fix the 7 numeric layer-index refs** (all in the `Magic` layer): the 3
+   `&tog` values (remap by which layer they point to) and the 4 `&to` alpha
+   switchers at positions 10–13 (set explicitly; point unused ones at `&none`).
+   Nothing else needs touching — all other layer access is symbolic.
+5. **Write with `JSON.pretty_generate` and no trailing newline** — that is
+   byte-for-byte the Layout Editor's export format (a plain load→dump round-trip
+   is identical), so the git diff stays limited to your real change.
+6. **Regenerate and verify:**
+   ```sh
+   rm -f keymap.dtsi keymap.dtsi.min device.dtsi.min
+   IMAGE=${PWD##*/}:$(git hash-object Dockerfile)
+   docker run --rm -u $(id -u):$(id -g) -v "$PWD:/opt" "$IMAGE" rake keymap.dtsi dot
+   docker run --rm -u $(id -u):$(id -g) -v "$PWD:/opt" "$IMAGE" rake clean
+   grep -oE 'defined\(LAYER_[A-Za-z_]+\) && LAYER_[A-Za-z_]+ == 0' keymap.dtsi   # guards == your alpha set
+   grep -Ec 'LAYER_<removed1>\b|LAYER_<removed2>\b' keymap.dtsi                  # want 0 dangling
+   ```
+7. **Sync into `keymap.json`:** `ruby tools/sync-keymap-json.rb`.
+8. **Import `keymap.json`** in the Layout Editor and **build** to validate —
+   `dtc` runs only in MoErgo's cloud (see below).
+
 ---
 
 ## Firmware build boundary

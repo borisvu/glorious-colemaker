@@ -31,11 +31,10 @@ This repo's owner deploys by **importing `keymap.json`** into the Layout Editor 
 
 1. Edit source (`keymap.dtsi.erb`, `world.yaml`, `emoji.yaml`, `device.dtsi`, or `keymap.json`).
 2. Run `rake` (or `rake keymap.dtsi dot` — note plain `rake dtsi` does *not* build `keymap.dtsi`; see Build).
-3. Sync the generated text into `keymap.json`:
-   ```sh
-   ruby -rjson -e 'k=JSON.load_file("keymap.json"); k["custom_defined_behaviors"]=File.read("keymap.dtsi"); k["custom_devicetree"]=File.read("device.dtsi"); File.write("keymap.json", JSON.pretty_generate(k))'
-   ```
+3. Sync the generated text into `keymap.json`: `ruby tools/sync-keymap-json.rb` (copies `keymap.dtsi`→`custom_defined_behaviors`, `device.dtsi`→`custom_devicetree`).
 4. Import `keymap.json` in the Glove80 Layout Editor and build. *(Alternatively, paste `keymap.dtsi` into the "Custom Defined Behaviors" text box directly — but this repo uses JSON import.)*
+
+To **add or reorder a base alpha layout**, follow the step-by-step recipe in DEVELOPMENT.md ("Recipe: add or reorder a base alpha layout"); `tools/reorder-base-layout.rb` is the documented worked example (the v52 Colemak-DH switch).
 
 ## Architecture
 
