@@ -215,6 +215,50 @@ worked example — copy and adapt its constants for the next change).
 8. **Import `keymap.json`** in the Layout Editor and **build** to validate —
    `dtc` runs only in MoErgo's cloud (see below).
 
+### Recipe: enable same-hand thumb + modifier chords (e.g. Cmd+Space)
+
+**Goal:** hold a home row mod and tap a thumb key **on the same hand** —
+right `Cmd+Space`, `Cmd+Tab`, `Shift+Enter` — the way v36 allowed. v52's
+bilateral enforcement blocks this by design. Implemented in v52 for the three
+right-hand thumbs; `tools/enable-same-hand-thumb-mods.rb` is the worked example.
+
+**The key insight** (from sunaku's [home row mods] write-up): bilateral
+enforcement is **two levels**, and you must change *both* — fixing only one
+does nothing (this is the mistake we made first: level 1 alone had zero effect
+on hardware).
+
+1. **Level 1 — the positional gate.** Every home row mod carries
+   `hold-trigger-key-positions = <OPPOSITE_HAND_KEYS>` (`keymap.dtsi.erb`,
+   inside the `emit_home_row_mod` block). A mod only resolves to a *hold* when
+   the next key pressed is in that list — same-hand keys make it resolve to a
+   *tap* instead. Since the thumb clusters are split by hand
+   (`LEFT_HAND_KEYS` / `RIGHT_HAND_KEYS`), a right-hand mod never held for a
+   right-thumb tap. **Fix:** the `#define SAME_HAND_THUMB_MODS` toggle
+   (`keymap.dtsi.erb` line 6) appends the mod's *own-hand* thumb positions
+   (`LEFT_THUMB_KEYS` / `RIGHT_THUMB_KEYS`) to that list. Requires `rake
+   keymap.dtsi dot` + `ruby tools/sync-keymap-json.rb` (it lives in the
+   generated DTSI / `custom_defined_behaviors`).
+
+2. **Level 2 — the per-finger enforcement layers.** When a mod *does* hold, it
+   also flips on a per-finger layer (`layer_names` 5–12: `LeftPinky`…
+   `RightPinky`) that **re-defines every same-hand key** while the mod is held:
+   same-hand alphas run a `&*_tap` macro that cancels the mod, and the thumbs
+   were remapped to `&mo LAY_RH_T*` — so the thumb's keycode never reached the
+   OS and the chord silently failed **even after the Level 1 fix**. **Fix:**
+   set the same-hand thumb positions to `&trans` on those layers, so the press
+   falls through to the base layer's thumb behavior, wrapped by the held mod.
+   This is exactly how the **opposite-hand** thumbs already behave (they are
+   `&trans` there — which is why opposite-hand chords always worked). This is a
+   `keymap.json` `layers`-array edit only, so **no `rake`/sync is needed** for
+   it. The v52 change set Enter (pos 57), Tab (73), Space (74) to `&trans` on
+   the four right-hand layers (indices 9–12), covering whichever right finger
+   holds the mod.
+
+**Validation:** `rake` cannot prove this works — flash and test the actual
+chords on hardware. (We confirmed `Cmd+Space` / `Cmd+Tab` / `Shift+Enter`.)
+
+[home row mods]: https://sunaku.github.io/home-row-mods.html#same-hand-chords
+
 ---
 
 ## Firmware build boundary

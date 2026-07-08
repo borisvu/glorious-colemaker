@@ -36,6 +36,8 @@ This repo's owner deploys by **importing `keymap.json`** into the Layout Editor 
 
 To **add or reorder a base alpha layout**, follow the step-by-step recipe in DEVELOPMENT.md ("Recipe: add or reorder a base alpha layout"); `tools/reorder-base-layout.rb` is the documented worked example (the v52 Colemak-DH switch).
 
+To **enable same-hand thumb + modifier chords** (e.g. one-handed `Cmd+Space`), see DEVELOPMENT.md ("Recipe: enable same-hand thumb + modifier chords"); `tools/enable-same-hand-thumb-mods.rb` is the worked example. Gotcha: bilateral enforcement is *two levels* (the `hold-trigger-key-positions` gate **and** the per-finger enforcement layers) and both must change.
+
 ## Architecture
 
 The core keymap is a large C-preprocessor DTSI program generated from an ERB template, then consumed by the Layout Editor (which runs it through the ZMK/dtc toolchain). Everything is compile-time: layout behavior is selected via `#define` settings (operating system, `DIFFICULTY_LEVEL`, home-row-mod order/timing, forgiveness flags, mouse keys, etc.) documented at the top of `keymap.dtsi.erb` and in README.md.
