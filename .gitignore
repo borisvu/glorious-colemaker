@@ -1,2 +1,5 @@
 *.tmp
 *.min
+.DS_Store
+*.uf2
+README/*.pdf
