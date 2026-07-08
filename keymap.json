@@ -7,7 +7,7 @@
   "unlisted": false,
   "date": 1772372343,
   "creator": "sunaku",
-  "title": "Glorious Engrammer v52",
+  "title": "Glorious Colemaker v52.2",
   "notes": "Sunaku's Keymap v52 for the \"Glorious Engrammer\" 🧑‍🚀🚀✨\n- Intro & setup: https://github.com/sunaku/glove80-keymaps/tree/v52/#readme\n- Release notes: https://github.com/sunaku/glove80-keymaps/releases/tag/v52\n- Printable map: https://github.com/sunaku/glove80-keymaps/raw/v52/README/all-layer-diagrams.pdf\n- Documentation: https://sunaku.github.io/moergo-glove80-keyboard.html#layers\n- Discord forum: #glorious-engrammer channel in https://www.moergo.com/discord",
   "tags": [
     "sunaku",
@@ -6010,17 +6010,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T1"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -6128,30 +6118,10 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T5"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T4"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -6668,17 +6638,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T1"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -6786,30 +6746,10 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T5"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T4"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -7326,17 +7266,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T1"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -7444,30 +7374,10 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T5"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T4"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -7984,17 +7894,7 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T1"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
@@ -8102,30 +8002,10 @@
         }
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T5"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
-        "value": "Custom",
-        "params": [
-          {
-            "value": "&mo LAY_RH_T4"
-          }
-        ],
-        "decoration": {
-          "label": "Layer",
-          "icon": "fa-circle",
-          "background": "#d1c4e9"
-        }
+        "value": "&trans"
       },
       {
         "value": "Custom",
