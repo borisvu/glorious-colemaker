@@ -24,13 +24,21 @@ cloud.
                  │  keymap.dtsi   define.svg/.json          │
                  │  README/*.pdf   (*.min intermediates)    │
                  └────────────────────┬────────────────────┘
-                                      │  copy-paste into Layout Editor
+                                      │  sync into keymap.json, then IMPORT it
                                       ▼
               MoErgo Glove80 Layout Editor  (my.moergo.com)
                                       │  cloud build (ZMK + dtc + Zephyr)
                                       ▼
                        firmware .uf2  ──►  _build/  ──►  ./flash  ──►  keyboard
 ```
+
+> **Deploy method used here: JSON import.** This repo is deployed by importing
+> `keymap.json` into the Layout Editor (the editor only imports JSON, not DTSI
+> files). The firmware builds from `keymap.json`'s embedded
+> `custom_defined_behaviors` (the `keymap.dtsi` text) and `custom_devicetree`
+> (the `device.dtsi` text), so those must be **synced into `keymap.json` before
+> import**. `rake` does *not* do this sync — see
+> [Workflow A](#workflow-a--changing-behavior--settings-the-common-case).
 
 > **Key fact:** nothing in this repo compiles firmware. `rake` only produces
 > **text**. The `.uf2` is compiled by MoErgo's cloud. See
@@ -92,7 +100,7 @@ Run all commands from the repo root.
 |---------|----------------|----------|
 | `rake` | Rebuild **everything** (`:dtsi` + `:dot` + `:pdf`) after any source edit. | Ruby, rake, graphviz, graphicsmagick, poppler-utils |
 | `./rake` | Same, but runs `rake` inside Docker — use if you don't have the tools installed. Auto-builds the image from `Dockerfile`. | Docker |
-| `rake dtsi` | Regenerate **only `keymap.dtsi`** (+ `.min`). Fastest; Ruby-only. Use when you only touched behaviors and just need the paste artifact. | Ruby, rake |
+| `rake keymap.dtsi` | Regenerate **only `keymap.dtsi`** (the file target). Ruby-only. Use when you only touched behaviors. ⚠️ Plain `rake dtsi` does **not** build `keymap.dtsi` — the `:dtsi` task depends on the `.erb`, and `keymap.dtsi` is built transitively via the `.min` → `dot`/`pdf` chain. | Ruby, rake |
 | `rake dot` | Regenerate `define.svg` / `define.json`. | + graphviz |
 | `rake pdf` | Regenerate the layer-diagram PDFs. | + graphicsmagick, poppler-utils |
 | `rake clean` | Remove `*.tmp` / `*.min` and intermediate PDFs. | — |
@@ -123,16 +131,23 @@ For anything defined in `keymap.dtsi.erb` (timings, home-row mods, combos,
 macros, `#define` settings, OS default, etc.):
 
 1. **Edit** `keymap.dtsi.erb` (or `world.yaml` / `emoji.yaml` / `device.dtsi`).
-2. **`rake dtsi`** (or full `rake`) to regenerate `keymap.dtsi`.
+2. **`rake keymap.dtsi dot`** to regenerate `keymap.dtsi` (plain `rake dtsi`
+   does **not** build it — see [Commands](#commands--what-where-when)).
 3. **Review the diff** — `git diff keymap.dtsi` — confirm only what you intended changed.
-4. **Paste** the regenerated `keymap.dtsi` into your keymap's **"Custom Defined
-   Behaviors"** box in the Layout Editor (paste `device.dtsi` into the
-   **devicetree** box if you changed RGB).
-5. In the editor, **build** the firmware (MoErgo compiles the `.uf2` in the cloud).
+4. **Sync** the generated text into `keymap.json`'s embedded fields (the step
+   that makes the JSON import carry your change):
+   ```sh
+   ruby -rjson -e 'k=JSON.load_file("keymap.json"); k["custom_defined_behaviors"]=File.read("keymap.dtsi"); k["custom_devicetree"]=File.read("device.dtsi"); File.write("keymap.json", JSON.pretty_generate(k))'
+   ```
+5. **Import `keymap.json`** in the Layout Editor and **build** (MoErgo compiles
+   the `.uf2` in the cloud). *(Alternatively you can paste `keymap.dtsi` into the
+   "Custom Defined Behaviors" box and `device.dtsi` into the devicetree box —
+   but this repo deploys by JSON import.)*
 6. **Download** the `.uf2` into `_build/`, then **`./flash`** with the keyboard
    in bootloader mode.
-7. **Re-export** the keymap JSON from the editor and **overwrite `keymap.json`**
-   so the repo snapshot stays in sync, then commit.
+7. **Commit** `keymap.dtsi` + `keymap.json` together so the repo stays in sync.
+   (If you rearranged keys/layers *inside the editor*, re-export and overwrite
+   `keymap.json`, then re-run `rake` + the sync in step 4.)
 
 > Quick tuning without a rebuild: many `#define` settings can be overridden by
 > adding lines at the **top of the "Custom Defined Behaviors" box** in the

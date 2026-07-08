@@ -17,7 +17,7 @@ rake clean      # remove *.tmp and *.min intermediates
 rake clobber    # also remove generated .min / pdf outputs
 ```
 
-Default task runs three groups: `:dtsi` (the keymap), `:dot` (settings diagram), `:pdf` (layer diagrams). Run a single group with e.g. `rake dtsi`.
+Default task runs three groups: `:dtsi` (the keymap), `:dot` (settings diagram), `:pdf` (layer diagrams). **Quirk:** the `:dtsi` task does *not* actually build `keymap.dtsi` (it depends on the `.erb`, not the output); `keymap.dtsi` is only built transitively via the `.min` → `:dot`/`:pdf` chain. To rebuild just the keymap, run `rake keymap.dtsi` (the file target) or `rake keymap.dtsi dot`.
 
 `./flash` copies the newest `_build/*.uf2` to a mounted Glove80 bootloader (Linux paths; expects `inotifywait`).
 
@@ -27,9 +27,15 @@ Default task runs three groups: `:dtsi` (the keymap), `:dot` (settings diagram),
 
 ## Deploy workflow
 
+This repo's owner deploys by **importing `keymap.json`** into the Layout Editor (not by pasting DTSI). Because the firmware builds from `keymap.json`'s embedded `custom_defined_behaviors`/`custom_devicetree`, the regenerated `keymap.dtsi`/`device.dtsi` must be **synced into `keymap.json` before import** — `rake` does NOT do this.
+
 1. Edit source (`keymap.dtsi.erb`, `world.yaml`, `emoji.yaml`, `device.dtsi`, or `keymap.json`).
-2. Run `rake`.
-3. Copy the regenerated **`keymap.dtsi`** contents into the "Custom Defined Behaviors" text box of your keymap in the Glove80 Layout Editor.
+2. Run `rake` (or `rake keymap.dtsi dot` — note plain `rake dtsi` does *not* build `keymap.dtsi`; see Build).
+3. Sync the generated text into `keymap.json`:
+   ```sh
+   ruby -rjson -e 'k=JSON.load_file("keymap.json"); k["custom_defined_behaviors"]=File.read("keymap.dtsi"); k["custom_devicetree"]=File.read("device.dtsi"); File.write("keymap.json", JSON.pretty_generate(k))'
+   ```
+4. Import `keymap.json` in the Glove80 Layout Editor and build. *(Alternatively, paste `keymap.dtsi` into the "Custom Defined Behaviors" text box directly — but this repo uses JSON import.)*
 
 ## Architecture
 
